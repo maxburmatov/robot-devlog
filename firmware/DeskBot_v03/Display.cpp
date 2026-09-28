@@ -84,38 +84,6 @@ void RobotDisplay::drawHappy(unsigned long now) {
   oled_.drawUTF8(23, 63, "Ооо, ты здесь!");
 }
 
-void RobotDisplay::drawTilt(unsigned long now, int8_t direction) {
-  const int side = direction < 0 ? -1 : 1;
-  const int bounce = ((now / 180) % 2 == 0) ? 0 : 1;
-
-  // Глаза слегка «проваливаются» в сторону наклона.
-  const int leftY = 13 + (side < 0 ? 4 : 0) + bounce;
-  const int rightY = 13 + (side > 0 ? 4 : 0) + bounce;
-
-  oled_.drawRFrame(15, leftY, 28, 24, 7);
-  oled_.drawDisc(29 + side * 5, leftY + 12, 5);
-  oled_.drawRFrame(85, rightY, 28, 24, 7);
-  oled_.drawDisc(99 + side * 5, rightY + 12, 5);
-
-  // Наклонённые брови усиливают ощущение движения, оставаясь в стиле лица.
-  if (side < 0) {
-    oled_.drawLine(17, 9 + bounce, 39, 6 + bounce);
-    oled_.drawLine(87, 7 + bounce, 109, 11 + bounce);
-  } else {
-    oled_.drawLine(17, 11 + bounce, 39, 7 + bounce);
-    oled_.drawLine(87, 6 + bounce, 109, 9 + bounce);
-  }
-
-  // Маленький рот покачивается в ту же сторону.
-  const int mouthX = 64 + side * 4;
-  const int mouthY = 47 + bounce;
-  oled_.drawCircle(mouthX, mouthY, 4);
-  oled_.drawPixel(mouthX - side * 5, mouthY - 1);
-
-  oled_.setFont(u8g2_font_6x13_t_cyrillic);
-  oled_.drawUTF8(31, 63, "Осторожно...");
-}
-
 void RobotDisplay::drawDrowsy(unsigned long now,
                               unsigned long stateStartedAt) {
   const unsigned long elapsed = now - stateStartedAt;
@@ -209,45 +177,6 @@ void RobotDisplay::drawWake(unsigned long now, unsigned long wakeStartedAt) {
   }
 }
 
-void RobotDisplay::drawGroggy(unsigned long now,
-                              unsigned long wakeStartedAt) {
-  const unsigned long elapsed = now - wakeStartedAt;
-  const unsigned long phase = (elapsed / 450) % 4;
-  const int sway = ((elapsed / 600) % 2 == 0) ? -1 : 1;
-
-  // Сначала глаза закрыты, затем веки медленно и неравномерно открываются.
-  if (phase == 0) {
-    oled_.drawHLine(17, 28, 24);
-    oled_.drawHLine(87, 28, 24);
-  } else {
-    const int lidY = phase == 1 ? 25 : (phase == 2 ? 22 : 24);
-
-    oled_.drawRFrame(15, 17, 28, 21, 7);
-    oled_.drawDisc(29 + sway, 29, 4);
-    oled_.drawRFrame(85, 17, 28, 21, 7);
-    oled_.drawDisc(99 + sway, 29, 4);
-
-    // Маска оставляет видимой только нижнюю часть глаза под тяжёлым веком.
-    oled_.setDrawColor(0);
-    oled_.drawBox(14, 16, 30, lidY - 16);
-    oled_.drawBox(84, 16, 30, lidY - 16);
-    oled_.setDrawColor(1);
-    oled_.drawHLine(17, lidY, 24);
-    oled_.drawHLine(87, lidY, 24);
-  }
-
-  // Внутренние края бровей приподняты: выражение сонное, а не сердитое.
-  oled_.drawLine(17, 13, 39, 10);
-  oled_.drawLine(87, 10, 109, 13);
-
-  // Небольшой пульсирующий круг похож на тихий зевок.
-  const int mouthRadius = phase == 2 ? 4 : 3;
-  oled_.drawCircle(64 + sway, 47, mouthRadius);
-
-  oled_.setFont(u8g2_font_6x13_t_cyrillic);
-  oled_.drawUTF8(22, 63, "М-м?.. Ты чего?");
-}
-
 void RobotDisplay::drawSurprised(unsigned long now) {
   const unsigned long phase = (now / 130) % 4;
   const int lift = (phase == 1 || phase == 2) ? 2 : 0;
@@ -316,28 +245,9 @@ void RobotDisplay::drawDizzy(unsigned long now) {
   oled_.drawUTF8(34, 63, "Кружится...");
 }
 
-void RobotDisplay::drawUpsideDown() {
-  // Смещённые черты лица визуально выделяют перевёрнутое положение.
-  oled_.drawRFrame(85, 25, 28, 26, 7);
-  oled_.drawDisc(99, 38, 5);
-  oled_.drawRFrame(15, 25, 28, 26, 7);
-  oled_.drawDisc(29, 38, 5);
-  oled_.drawCircle(64, 14, 5);
-  oled_.setFont(u8g2_font_6x13_t_cyrillic);
-  oled_.drawUTF8(31, 63, "Перевернули!");
-}
-
 void RobotDisplay::update(RobotState state, unsigned long now,
                           unsigned long stateStartedAt, int8_t gazeOffset) {
   oled_.clearBuffer();
-
-  // Наклон временно становится отдельной эмоцией в активных состояниях.
-  if (gazeOffset != 0 &&
-      (state == RobotState::Curious || state == RobotState::Happy)) {
-    drawTilt(now, gazeOffset);
-    oled_.sendBuffer();
-    return;
-  }
 
   switch (state) {
     case RobotState::Curious:
@@ -355,9 +265,6 @@ void RobotDisplay::update(RobotState state, unsigned long now,
     case RobotState::Wake:
       drawWake(now, stateStartedAt);
       break;
-    case RobotState::Groggy:
-      drawGroggy(now, stateStartedAt);
-      break;
     case RobotState::Surprised:
       drawSurprised(now);
       break;
@@ -366,9 +273,6 @@ void RobotDisplay::update(RobotState state, unsigned long now,
       break;
     case RobotState::Dizzy:
       drawDizzy(now);
-      break;
-    case RobotState::UpsideDown:
-      drawUpsideDown();
       break;
   }
 

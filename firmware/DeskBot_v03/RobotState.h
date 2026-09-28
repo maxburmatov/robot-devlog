@@ -6,9 +6,7 @@ enum class RobotState {
   Drowsy,
   Sleep,
   Wake,
-  Groggy,
   Surprised,
   PickedUp,
   Dizzy,
-  UpsideDown,
 };

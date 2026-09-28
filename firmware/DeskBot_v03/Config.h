@@ -77,9 +77,6 @@ constexpr unsigned long OBJECT_LOST_TIMEOUT_MS = 1200;
 // Общая продолжительность анимации пробуждения в миллисекундах.
 constexpr unsigned long WAKE_DURATION_MS = 1200;
 
-// Продолжительность полусонной эмоции после пробуждения движением, в мс.
-constexpr unsigned long MOTION_WAKE_GROGGY_DURATION_MS = 2200;
-
 // Минимальное время бодрствования после любого пробуждения, даже в темноте.
 constexpr unsigned long AWAKE_AFTER_WAKE_MS = 10000;
 
@@ -99,13 +96,6 @@ constexpr float IMU_SHAKE_ACCEL_DELTA_G = 0.65F;
 
 // Угловая скорость в градусах/с, считающаяся встряхиванием.
 constexpr float IMU_SHAKE_GYRO_DPS = 220.0F;
-
-// Порог ориентации для входа в состояние переворота.
-// -1 означает переворот на 180 градусов, 0 — наклон на 90 градусов.
-constexpr float IMU_UPSIDE_DOWN_DOT = -0.55F;
-
-// Порог ориентации для выхода из перевёрнутого состояния.
-constexpr float IMU_UPRIGHT_DOT = 0.10F;
 
 // Изменение ускорения по оси X в g, необходимое для смещения взгляда.
 constexpr float IMU_GAZE_TILT_G = 0.18F;

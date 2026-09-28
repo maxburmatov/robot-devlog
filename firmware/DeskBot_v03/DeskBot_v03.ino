@@ -40,9 +40,6 @@ void startReaction(RobotState state, unsigned long now,
 }
 
 RobotState stateForDisplay(unsigned long now) {
-  if (motionSensorAvailable && motionReading.upsideDown) {
-    return RobotState::UpsideDown;
-  }
   if (deadlineIsActive(now, reactionUntil)) {
     return reactionState;
   }
@@ -58,7 +55,7 @@ void updateLightSensor(unsigned long now) {
 
   Serial.printf("Освещённость: %.1f лк\n", lightLux);
 
-  // Свет или движение могут отменить засыпание до перехода в Sleep.
+  // Только свет может отменить засыпание до перехода в Sleep.
   if (currentState == RobotState::Drowsy) {
     if (lightLux > config::WAKE_LUX) {
       currentState = RobotState::Curious;
@@ -72,7 +69,6 @@ void updateLightSensor(unsigned long now) {
 
   if (currentState != RobotState::Sleep &&
       currentState != RobotState::Wake &&
-      currentState != RobotState::Groggy &&
       !deadlineIsActive(now, awakeUntil) &&
       lightLux < config::SLEEP_LUX) {
     currentState = RobotState::Drowsy;
@@ -93,8 +89,7 @@ void updateLightSensor(unsigned long now) {
 void updateDistanceSensor(unsigned long now) {
   if (currentState == RobotState::Sleep ||
       currentState == RobotState::Drowsy ||
-      currentState == RobotState::Wake ||
-      currentState == RobotState::Groggy) {
+      currentState == RobotState::Wake) {
     nearDistanceSamples = 0;
     farDistanceSamples = 0;
     return;
@@ -162,11 +157,6 @@ void updateWakeState(unsigned long now) {
       now - wakeStartedAt >= config::WAKE_DURATION_MS) {
     currentState = RobotState::Curious;
     Serial.println("STATE: WAKE -> CURIOUS");
-  } else if (currentState == RobotState::Groggy &&
-             now - wakeStartedAt >=
-                 config::MOTION_WAKE_GROGGY_DURATION_MS) {
-    currentState = RobotState::Curious;
-    Serial.println("STATE: GROGGY -> CURIOUS");
   }
 }
 
@@ -175,61 +165,41 @@ void updateMotionSensor(unsigned long now) {
     return;
   }
 
-  const bool motionEvent =
-      motionReading.movementStarted || motionReading.pickedUp ||
-      motionReading.putDown || motionReading.shaken ||
-      motionReading.upsideDown;
+  const bool reactionsAllowed =
+      currentState != RobotState::Sleep &&
+      currentState != RobotState::Drowsy;
 
-  if (currentState == RobotState::Drowsy && motionEvent) {
-    currentState = RobotState::Curious;
-    awakeUntil = now + config::AWAKE_AFTER_WAKE_MS;
-    Serial.println("STATE: DROWSY -> CURIOUS (движение)");
-  }
-
-  if (currentState == RobotState::Sleep && motionEvent) {
-    currentState = RobotState::Groggy;
-    wakeStartedAt = now;
-    awakeUntil = now + config::AWAKE_AFTER_WAKE_MS;
-    reactionUntil = 0;
-    Serial.println("STATE: SLEEP -> GROGGY (движение)");
-  }
-
-  // Пока робот приходит в себя, другие краткие эмоции его не перебивают.
-  if (currentState == RobotState::Groggy && !motionReading.pickedUp) {
-    // Ничего не делаем: показ Groggy контролируется основным состоянием.
-  } else if (motionReading.putDown) {
-    if (reactionState == RobotState::PickedUp) {
-      reactionUntil = 0;
+  // Во время сна и засыпания IMU не меняет состояние и эмоцию робота.
+  if (reactionsAllowed) {
+    if (motionReading.putDown) {
+      if (reactionState == RobotState::PickedUp) {
+        reactionUntil = 0;
+      }
+      Serial.println("EVENT: PUT_DOWN (дополнительная реакция подавлена)");
+    } else if (motionReading.pickedUp) {
+      startReaction(RobotState::PickedUp, now,
+                    config::PICKED_UP_DURATION_MS);
+      Serial.println("REACTION: PICKED_UP (поставь меня)");
+    } else if (motionReading.shaken) {
+      startReaction(RobotState::Dizzy, now, config::DIZZY_DURATION_MS);
+      Serial.println("REACTION: DIZZY (встряхивание)");
+    } else if (motionReading.movementStarted) {
+      startReaction(RobotState::Surprised, now,
+                    config::SURPRISED_DURATION_MS);
+      Serial.println("REACTION: SURPRISED (короткое движение)");
     }
-    Serial.println("EVENT: PUT_DOWN (дополнительная реакция подавлена)");
-  } else if (motionReading.pickedUp) {
-    startReaction(RobotState::PickedUp, now,
-                  config::PICKED_UP_DURATION_MS);
-    Serial.println("REACTION: PICKED_UP (поставь меня)");
-  } else if (motionReading.shaken) {
-    startReaction(RobotState::Dizzy, now, config::DIZZY_DURATION_MS);
-    Serial.println("REACTION: DIZZY (встряхивание)");
-  } else if (motionReading.movementStarted) {
-    startReaction(RobotState::Surprised, now,
-                  config::SURPRISED_DURATION_MS);
-    Serial.println("REACTION: SURPRISED (короткое движение)");
-  } else if (motionReading.returnedUpright) {
-    startReaction(RobotState::Surprised, now,
-                  config::SURPRISED_DURATION_MS);
-    Serial.println("REACTION: SURPRISED (снова вертикально)");
   }
 
   if (now - lastImuLog >= config::IMU_LOG_INTERVAL_MS) {
     lastImuLog = now;
     Serial.printf(
-        "IMU a=(%.2f, %.2f, %.2f) |a|=%.2f gyro=%.1f dot=%.2f%s\n",
+        "IMU a=(%.2f, %.2f, %.2f) |a|=%.2f gyro=%.1f dot=%.2f\n",
         motionReading.accelX,
         motionReading.accelY,
         motionReading.accelZ,
         motionReading.accelMagnitude,
         motionReading.gyroMagnitude,
-        motionReading.orientationDot,
-        motionReading.upsideDown ? " UPSIDE_DOWN" : "");
+        motionReading.orientationDot);
   }
 }
 

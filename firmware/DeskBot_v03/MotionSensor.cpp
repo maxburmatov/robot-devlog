@@ -164,13 +164,6 @@ bool MotionSensor::update(unsigned long now, MotionReading& reading) {
     }
   }
 
-  const bool wasUpsideDown = upsideDown_;
-  if (!upsideDown_ && orientationDot <= config::IMU_UPSIDE_DOWN_DOT) {
-    upsideDown_ = true;
-  } else if (upsideDown_ && orientationDot >= config::IMU_UPRIGHT_DOT) {
-    upsideDown_ = false;
-  }
-
   const float sidewaysTilt = filteredX_ - referenceX_;
   int8_t gazeOffset = 0;
   if (sidewaysTilt >= config::IMU_GAZE_TILT_G) {
@@ -190,7 +183,5 @@ bool MotionSensor::update(unsigned long now, MotionReading& reading) {
   reading.pickedUp = pickedUp;
   reading.putDown = putDown;
   reading.shaken = shaken;
-  reading.upsideDown = upsideDown_;
-  reading.returnedUpright = wasUpsideDown && !upsideDown_;
   return true;
 }

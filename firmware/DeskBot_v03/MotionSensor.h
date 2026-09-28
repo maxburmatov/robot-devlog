@@ -15,8 +15,6 @@ struct MotionReading {
   bool pickedUp = false;
   bool putDown = false;
   bool shaken = false;
-  bool upsideDown = false;
-  bool returnedUpright = false;
 };
 
 class MotionSensor {
@@ -40,7 +38,6 @@ class MotionSensor {
   unsigned long lastShakeAt_ = 0;
   bool pickupCandidate_ = false;
   bool waitingForPutDown_ = false;
-  bool upsideDown_ = false;
   bool available_ = false;
 
   void calibrate();
