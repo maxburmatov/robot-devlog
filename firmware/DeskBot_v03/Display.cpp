@@ -13,16 +13,16 @@ void RobotDisplay::begin() {
 
 void RobotDisplay::showStartup() {
   oled_.clearBuffer();
-  oled_.setFont(u8g2_font_6x12_tf);
+  oled_.setFont(u8g2_font_6x13_t_cyrillic);
   oled_.drawStr(37, 25, "DESKBOT");
-  oled_.drawStr(32, 45, "Starting...");
+  oled_.drawUTF8(40, 45, "Запуск...");
   oled_.sendBuffer();
 }
 
 void RobotDisplay::showDistanceSensorError() {
   oled_.clearBuffer();
-  oled_.setFont(u8g2_font_6x12_tf);
-  oled_.drawStr(23, 25, "TOF ERROR");
+  oled_.setFont(u8g2_font_6x13_t_cyrillic);
+  oled_.drawUTF8(31, 25, "Ошибка ToF");
   oled_.sendBuffer();
 }
 
@@ -317,7 +317,7 @@ void RobotDisplay::drawDizzy(unsigned long now) {
 }
 
 void RobotDisplay::drawUpsideDown() {
-  // The shifted facial features make the inverted pose visually distinct.
+  // Смещённые черты лица визуально выделяют перевёрнутое положение.
   oled_.drawRFrame(85, 25, 28, 26, 7);
   oled_.drawDisc(99, 38, 5);
   oled_.drawRFrame(15, 25, 28, 26, 7);
@@ -331,7 +331,7 @@ void RobotDisplay::update(RobotState state, unsigned long now,
                           unsigned long stateStartedAt, int8_t gazeOffset) {
   oled_.clearBuffer();
 
-  // Наклон еменно становится отдельной эмоцией в активных состояниях.
+  // Наклон временно становится отдельной эмоцией в активных состояниях.
   if (gazeOffset != 0 &&
       (state == RobotState::Curious || state == RobotState::Happy)) {
     drawTilt(now, gazeOffset);

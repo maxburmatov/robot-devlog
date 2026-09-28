@@ -4,25 +4,25 @@
 #include <Adafruit_VL53L0X.h>
 
 // =====================================
-// DESKBOT - EMOTION SYSTEM v0.2
+// DESKBOT — СИСТЕМА ЭМОЦИЙ v0.2
 // ESP32 + SSD1306 I2C + VL53L0X I2C
 // =====================================
 
-// One shared I2C bus
+// Одна общая шина I2C
 #define I2C_SDA 21
 #define I2C_SCL 22
 
-// Distance thresholds (mm)
+// Пороги расстояния (мм)
 #define HAPPY_DISTANCE   300
 #define CURIOUS_DISTANCE 400
 
-// Update intervals (ms)
+// Интервалы обновления (мс)
 #define SENSOR_INTERVAL  100
 #define DISPLAY_INTERVAL 50
 #define BLINK_INTERVAL   3000
 #define BLINK_DURATION   120
 
-// If object disappears completely
+// Если объект полностью исчез
 #define OBJECT_LOST_TIMEOUT 500
 
 // =====================================
@@ -41,7 +41,7 @@ U8G2_SSD1306_128X64_NONAME_F_HW_I2C oled(
 Adafruit_VL53L0X tof;
 
 // =====================================
-// ROBOT STATES
+// СОСТОЯНИЯ РОБОТА
 // =====================================
 
 enum RobotState {
@@ -52,7 +52,7 @@ enum RobotState {
 RobotState currentState = CURIOUS;
 
 // =====================================
-// TIMERS
+// ТАЙМЕРЫ
 // =====================================
 
 unsigned long lastSensorUpdate = 0;
@@ -62,7 +62,7 @@ unsigned long lastValidMeasurement = 0;
 uint16_t distanceMM = 0;
 
 // =====================================
-// HEART
+// СЕРДЦЕ
 // =====================================
 
 void drawHeart(int cx, int cy) {
@@ -82,7 +82,7 @@ void drawHeart(int cx, int cy) {
 }
 
 // =====================================
-// CURIOUS FACE
+// ЭМОЦИЯ CURIOUS
 // =====================================
 
 void drawCurious(unsigned long now) {
@@ -106,25 +106,25 @@ void drawCurious(unsigned long now) {
 
   } else {
 
-    // Left eye
+    // Левый глаз
     oled.drawRFrame(15, 13, 28, 26, 7);
     oled.drawDisc(29 + gaze, 26, 5);
 
-    // Right eye
+    // Правый глаз
     oled.drawRFrame(85, 13, 28, 26, 7);
     oled.drawDisc(99 + gaze, 26, 5);
   }
 
-  // Curious mouth
+  // Рот для эмоции Curious
   oled.drawCircle(64, 46, 4);
 
-  // Text
+  // Текст
   oled.setFont(u8g2_font_6x13_t_cyrillic);
   oled.drawUTF8(28, 63, "Наблюдаю...");
 }
 
 // =====================================
-// HAPPY FACE
+// ЭМОЦИЯ HAPPY
 // =====================================
 
 void drawHappy(unsigned long now) {
@@ -139,16 +139,16 @@ void drawHappy(unsigned long now) {
 
   } else {
 
-    // Same eye frames as CURIOUS
+    // Такие же контуры глаз, как в CURIOUS
     oled.drawRFrame(15, 13, 28, 26, 7);
     oled.drawRFrame(85, 13, 28, 26, 7);
 
-    // Hearts instead of pupils
+    // Сердца вместо зрачков
     drawHeart(29, 23);
     drawHeart(99, 23);
   }
 
-  // Smile
+  // Улыбка
   oled.drawLine(48, 43, 52, 47);
   oled.drawLine(52, 47, 58, 50);
   oled.drawLine(58, 50, 64, 51);
@@ -156,13 +156,13 @@ void drawHappy(unsigned long now) {
   oled.drawLine(70, 50, 76, 47);
   oled.drawLine(76, 47, 80, 43);
 
-  // Text
+  // Текст
   oled.setFont(u8g2_font_6x13_t_cyrillic);
   oled.drawUTF8(23, 63, "Ооо, ты здесь!");
 }
 
 // =====================================
-// UPDATE DISPLAY
+// ОБНОВЛЕНИЕ ДИСПЛЕЯ
 // =====================================
 
 void updateDisplay(unsigned long now) {
@@ -181,7 +181,7 @@ void updateDisplay(unsigned long now) {
 }
 
 // =====================================
-// UPDATE SENSOR
+// ОБНОВЛЕНИЕ ДАТЧИКА
 // =====================================
 
 void updateSensor() {
@@ -192,10 +192,10 @@ void updateSensor() {
 
   unsigned long now = millis();
 
-  // Invalid measurement / object lost
+  // Некорректное измерение или потеря объекта
   if (measure.RangeStatus != 0) {
 
-    Serial.print("Measurement invalid. Status: ");
+    Serial.print("Некорректное измерение. Статус: ");
     Serial.println(measure.RangeStatus);
 
     if (
@@ -206,23 +206,23 @@ void updateSensor() {
       currentState = CURIOUS;
 
       Serial.println(
-        "STATE: HAPPY -> CURIOUS (object lost)"
+        "STATE: HAPPY -> CURIOUS (объект потерян)"
       );
     }
 
     return;
   }
 
-  // Valid measurement
+  // Корректное измерение
   distanceMM = measure.RangeMilliMeter;
 
   lastValidMeasurement = now;
 
-  Serial.print("Distance: ");
+  Serial.print("Расстояние: ");
   Serial.print(distanceMM);
   Serial.println(" mm");
 
-  // State transitions
+  // Переходы между состояниями
   switch (currentState) {
 
     case CURIOUS:
@@ -254,7 +254,7 @@ void updateSensor() {
 }
 
 // =====================================
-// SETUP
+// НАСТРОЙКА
 // =====================================
 
 void setup() {
@@ -264,23 +264,23 @@ void setup() {
   delay(500);
 
   Serial.println();
-  Serial.println("DESKBOT EMOTION SYSTEM");
+  Serial.println("СИСТЕМА ЭМОЦИЙ DESKBOT");
 
   // ===================================
-  // ONE SHARED I2C BUS
+  // ОДНА ОБЩАЯ ШИНА I2C
   // ===================================
 
   Wire.begin(I2C_SDA, I2C_SCL);
 
-  // Start conservatively at 100 kHz
+  // Начинаем с безопасной частоты 100 кГц
   Wire.setClock(100000);
 
   // ===================================
   // OLED
   // ===================================
 
-  // U8g2 uses 8-bit I2C address format
-  // OLED address = 0x3C
+  // U8g2 использует восьмибитный формат I2C-адреса
+  // Адрес OLED = 0x3C
   oled.setI2CAddress(0x3C * 2);
 
   oled.begin();
@@ -289,10 +289,10 @@ void setup() {
 
   oled.clearBuffer();
 
-  oled.setFont(u8g2_font_6x12_tf);
+  oled.setFont(u8g2_font_6x13_t_cyrillic);
 
   oled.drawStr(37, 25, "DESKBOT");
-  oled.drawStr(32, 45, "Starting...");
+  oled.drawUTF8(40, 45, "Запуск...");
 
   oled.sendBuffer();
 
@@ -304,13 +304,13 @@ void setup() {
 
   if (!tof.begin(0x29, false, &Wire)) {
 
-    Serial.println("VL53L0X NOT FOUND");
+    Serial.println("VL53L0X НЕ НАЙДЕН");
 
     oled.clearBuffer();
 
-    oled.setFont(u8g2_font_6x12_tf);
+    oled.setFont(u8g2_font_6x13_t_cyrillic);
 
-    oled.drawStr(23, 25, "TOF ERROR");
+    oled.drawUTF8(31, 25, "Ошибка ToF");
 
     oled.sendBuffer();
 
@@ -325,21 +325,21 @@ void setup() {
 
   currentState = CURIOUS;
 
-  // Prevent strange state on startup
+  // Предотвращаем некорректное состояние при запуске
   lastValidMeasurement = millis();
 
   delay(500);
 }
 
 // =====================================
-// MAIN LOOP
+// ОСНОВНОЙ ЦИКЛ
 // =====================================
 
 void loop() {
 
   unsigned long now = millis();
 
-  // Sensor
+  // Датчик
   if (
     now - lastSensorUpdate >= SENSOR_INTERVAL
   ) {
@@ -349,7 +349,7 @@ void loop() {
     updateSensor();
   }
 
-  // Display animation
+  // Анимация дисплея
   if (
     now - lastDisplayUpdate >= DISPLAY_INTERVAL
   ) {

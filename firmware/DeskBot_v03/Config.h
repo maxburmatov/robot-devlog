@@ -120,7 +120,7 @@ constexpr unsigned long IMU_REST_BEFORE_MOVE_MS = 600;
 // а не одиночным толчком корпуса.
 constexpr unsigned long IMU_PICKUP_CONFIRM_MS = 160;
 
-// Допустимый короткий разрыв между samples движения во время поднятия.
+// Допустимый короткий разрыв между измерениями движения во время поднятия.
 constexpr unsigned long IMU_PICKUP_MOTION_GAP_MS = 180;
 
 // Защита от повторного события поднятия в рамках одного движения.

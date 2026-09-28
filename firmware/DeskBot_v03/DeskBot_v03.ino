@@ -52,17 +52,17 @@ RobotState stateForDisplay(unsigned long now) {
 void updateLightSensor(unsigned long now) {
   float lightLux = 0.0F;
   if (!sensors.readLight(lightLux)) {
-    Serial.println("BH1750 read error");
+    Serial.println("Ошибка чтения BH1750");
     return;
   }
 
-  Serial.printf("Light: %.1f lx\n", lightLux);
+  Serial.printf("Освещённость: %.1f лк\n", lightLux);
 
   // Свет или движение могут отменить засыпание до перехода в Sleep.
   if (currentState == RobotState::Drowsy) {
     if (lightLux > config::WAKE_LUX) {
       currentState = RobotState::Curious;
-      Serial.println("STATE: DROWSY -> CURIOUS (light)");
+      Serial.println("STATE: DROWSY -> CURIOUS (свет)");
     } else if (now - drowsyStartedAt >= config::DROWSY_DURATION_MS) {
       currentState = RobotState::Sleep;
       Serial.println("STATE: DROWSY -> SLEEP");
@@ -107,7 +107,7 @@ void updateDistanceSensor(unsigned long now) {
 
     if (now - lastDistanceLog >= config::DISTANCE_LOG_INTERVAL_MS) {
       lastDistanceLog = now;
-      Serial.printf("ToF: %u mm status=%u\n", distanceMm, rangeStatus);
+      Serial.printf("ToF: %u мм, статус=%u\n", distanceMm, rangeStatus);
     }
 
     if (distanceMm <= config::HAPPY_DISTANCE_MM) {
@@ -120,7 +120,7 @@ void updateDistanceSensor(unsigned long now) {
           nearDistanceSamples >= config::DISTANCE_CONFIRM_SAMPLES) {
         currentState = RobotState::Happy;
         nearDistanceSamples = 0;
-        Serial.println("STATE: CURIOUS -> HAPPY (confirmed distance)");
+        Serial.println("STATE: CURIOUS -> HAPPY (расстояние подтверждено)");
       }
     } else if (distanceMm >= config::CURIOUS_DISTANCE_MM) {
       nearDistanceSamples = 0;
@@ -132,7 +132,7 @@ void updateDistanceSensor(unsigned long now) {
           farDistanceSamples >= config::DISTANCE_CONFIRM_SAMPLES) {
         currentState = RobotState::Curious;
         farDistanceSamples = 0;
-        Serial.println("STATE: HAPPY -> CURIOUS (confirmed distance)");
+        Serial.println("STATE: HAPPY -> CURIOUS (расстояние подтверждено)");
       }
     } else {
       // Зона гистерезиса 300–400 мм сохраняет текущее состояние, но не
@@ -146,13 +146,13 @@ void updateDistanceSensor(unsigned long now) {
 
     if (now - lastDistanceLog >= config::DISTANCE_LOG_INTERVAL_MS) {
       lastDistanceLog = now;
-      Serial.printf("ToF: invalid status=%u\n", rangeStatus);
+      Serial.printf("ToF: некорректный замер, статус=%u\n", rangeStatus);
     }
 
     if (currentState == RobotState::Happy &&
         now - lastValidMeasurement >= config::OBJECT_LOST_TIMEOUT_MS) {
       currentState = RobotState::Curious;
-      Serial.println("STATE: HAPPY -> CURIOUS (object lost)");
+      Serial.println("STATE: HAPPY -> CURIOUS (объект потерян)");
     }
   }
 }
@@ -183,7 +183,7 @@ void updateMotionSensor(unsigned long now) {
   if (currentState == RobotState::Drowsy && motionEvent) {
     currentState = RobotState::Curious;
     awakeUntil = now + config::AWAKE_AFTER_WAKE_MS;
-    Serial.println("STATE: DROWSY -> CURIOUS (motion)");
+    Serial.println("STATE: DROWSY -> CURIOUS (движение)");
   }
 
   if (currentState == RobotState::Sleep && motionEvent) {
@@ -191,7 +191,7 @@ void updateMotionSensor(unsigned long now) {
     wakeStartedAt = now;
     awakeUntil = now + config::AWAKE_AFTER_WAKE_MS;
     reactionUntil = 0;
-    Serial.println("STATE: SLEEP -> GROGGY (motion)");
+    Serial.println("STATE: SLEEP -> GROGGY (движение)");
   }
 
   // Пока робот приходит в себя, другие краткие эмоции его не перебивают.
@@ -201,22 +201,22 @@ void updateMotionSensor(unsigned long now) {
     if (reactionState == RobotState::PickedUp) {
       reactionUntil = 0;
     }
-    Serial.println("EVENT: PUT_DOWN (reaction suppressed)");
+    Serial.println("EVENT: PUT_DOWN (дополнительная реакция подавлена)");
   } else if (motionReading.pickedUp) {
     startReaction(RobotState::PickedUp, now,
                   config::PICKED_UP_DURATION_MS);
-    Serial.println("REACTION: PICKED_UP (put me down)");
+    Serial.println("REACTION: PICKED_UP (поставь меня)");
   } else if (motionReading.shaken) {
     startReaction(RobotState::Dizzy, now, config::DIZZY_DURATION_MS);
-    Serial.println("REACTION: DIZZY (shake)");
+    Serial.println("REACTION: DIZZY (встряхивание)");
   } else if (motionReading.movementStarted) {
     startReaction(RobotState::Surprised, now,
                   config::SURPRISED_DURATION_MS);
-    Serial.println("REACTION: SURPRISED (short movement)");
+    Serial.println("REACTION: SURPRISED (короткое движение)");
   } else if (motionReading.returnedUpright) {
     startReaction(RobotState::Surprised, now,
                   config::SURPRISED_DURATION_MS);
-    Serial.println("REACTION: SURPRISED (upright again)");
+    Serial.println("REACTION: SURPRISED (снова вертикально)");
   }
 
   if (now - lastImuLog >= config::IMU_LOG_INTERVAL_MS) {
@@ -236,7 +236,7 @@ void updateMotionSensor(unsigned long now) {
 void setup() {
   Serial.begin(115200);
   delay(500);
-  Serial.println("\nDESKBOT EMOTION SYSTEM v0.3");
+  Serial.println("\nСИСТЕМА ЭМОЦИЙ DESKBOT v0.3");
 
   Wire.begin(config::I2C_SDA_PIN, config::I2C_SCL_PIN);
   Wire.setClock(config::I2C_FREQUENCY_HZ);
@@ -246,27 +246,27 @@ void setup() {
   delay(1000);
 
   if (sensors.beginLight()) {
-    Serial.println("BH1750 initialized at 0x23");
+    Serial.println("BH1750 инициализирован по адресу 0x23");
   } else {
     // Без датчика света робот продолжит работать, но не будет засыпать.
-    Serial.println("BH1750 NOT FOUND");
+    Serial.println("BH1750 НЕ НАЙДЕН");
   }
 
   if (!sensors.beginDistance()) {
-    Serial.println("VL53L0X NOT FOUND");
+    Serial.println("VL53L0X НЕ НАЙДЕН");
     display.showDistanceSensorError();
     while (true) {
       delay(100);
     }
   }
 
-  Serial.println("Keep DeskBot still: calibrating LSM6DS3...");
+  Serial.println("Не двигайте DeskBot: выполняется калибровка LSM6DS3...");
   motionSensorAvailable = motionSensor.begin();
   if (motionSensorAvailable) {
-    Serial.println("LSM6DS3 initialized at 0x6B");
+    Serial.println("LSM6DS3 инициализирован по адресу 0x6B");
   } else {
-    // The original light/distance behavior remains available without the IMU.
-    Serial.println("LSM6DS3 NOT FOUND at 0x6B");
+    // Исходное поведение по свету и расстоянию остаётся доступным без IMU.
+    Serial.println("LSM6DS3 НЕ НАЙДЕН по адресу 0x6B");
   }
 
   Serial.println("OLED: 0x3C");

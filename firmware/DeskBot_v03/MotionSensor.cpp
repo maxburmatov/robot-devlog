@@ -16,7 +16,7 @@ MotionSensor::MotionSensor()
     : imu_(I2C_MODE, config::IMU_ADDRESS) {}
 
 bool MotionSensor::begin() {
-  // 104 Hz is sufficient for gestures and reduces traffic on the shared bus.
+  // Частоты 104 Гц достаточно для жестов; она снижает нагрузку на общую шину.
   imu_.settings.accelRange = 4;
   imu_.settings.accelSampleRate = 104;
   imu_.settings.accelBandWidth = 50;
@@ -136,12 +136,12 @@ bool MotionSensor::update(unsigned long now, MotionReading& reading) {
         config::IMU_PICKUP_CONFIRM_MS;
 
     if (strongMotion) {
-      // Shake имеет собственную реакцию и не должен выглядеть как поднятие.
+      // Встряхивание имеет собственную реакцию и не должно выглядеть как поднятие.
       pickupCandidate_ = false;
     } else if (pickupConfirmed && motionIsRecent) {
       if (waitingForPutDown_) {
-        // Первое отдельное движение после pickup считаем постановкой. Оно
-        // завершает pickup episode и не превращается в обычный Surprised.
+        // Первое отдельное движение после поднятия считаем постановкой. Оно
+        // завершает эпизод поднятия и не превращается в обычный Surprised.
         putDown = true;
         waitingForPutDown_ = false;
       } else if (now - lastPickupAt_ >= config::IMU_PICKUP_COOLDOWN_MS) {
