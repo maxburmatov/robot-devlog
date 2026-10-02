@@ -10,12 +10,12 @@
 
 ## Версии прошивки
 
-| Версия | Что добавлено | Связанный материал | Статус |
-|---|---|---|---|
-| [DeskBot_v01](firmware/DeskBot_v01/) | OLED-лицо и реакция на приближение по ToF | VIDEO-003 | Исторический пример |
-| [DeskBot_v02](firmware/DeskBot_v02/) | Сон и пробуждение по данным BH1750 | VIDEO-004 | Исторический пример, происхождение кода требует проверки |
-| [DeskBot_v03](firmware/DeskBot_v03/) | LSM6DS3: движение, поднятие и встряхивание | VIDEO-005 | Физически проверенный snapshot |
-| [DeskBot_v04](firmware/DeskBot_v04/) | История присутствия: ожидание, скука и возвращение | VIDEO-006 | Частично проверенный snapshot |
+| Версия | Что добавлено | Связанный материал |
+|---|---|---|
+| [DeskBot_v01](firmware/DeskBot_v01/) | OLED-лицо и реакция на приближение по ToF | [Telegram](https://t.me/burmatov_builds/28), [Instagram](https://www.instagram.com/reel/DdrJl56gOWI/), [YouTube](https://www.youtube.com/shorts/_fq64NIzsw0) |
+| [DeskBot_v02](firmware/DeskBot_v02/) | Сон и пробуждение по данным BH1750 | [Telegram](https://t.me/burmatov_builds/36), [Instagram](https://www.instagram.com/reel/DdwUL0hAVOD/), [YouTube](https://www.youtube.com/shorts/4MXHmpsthuA) | 
+| [DeskBot_v03](firmware/DeskBot_v03/) | LSM6DS3: движение, поднятие и встряхивание | [Telegram](https://t.me/burmatov_builds/41), [Instagram](https://www.instagram.com/reel/Dd4CDNrBK1f/), [YouTube](https://youtube.com/shorts/9AerNHL3oIc?si=KGGBzXKbvFo9xdsB)  | 
+| [DeskBot_v04](firmware/DeskBot_v04/) | История присутствия: ожидание, скука и возвращение | [Telegram](), [Instagram](), [YouTube]()  |
 
 ## Как пользоваться
 
@@ -37,10 +37,6 @@
 ## Навигация
 
 - [Все версии прошивки](firmware/)
-- Telegram: ссылка будет добавлена после публикации сопроводительного поста.
-- Reels: ссылки добавляются в README соответствующей версии после публикации ролика.
-
-## Лицензия
-
-Лицензия проекта пока не выбрана. До появления файла `LICENSE` стандартные
-авторские права сохраняются.
+- Telegram: https://t.me/burmatov_builds
+- Instagram: https://www.instagram.com/burmatov.pm
+- YouTube: https://www.youtube.com/@burmatov.pmrobo
