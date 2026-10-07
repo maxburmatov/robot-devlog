@@ -14,9 +14,10 @@
 |---|---|---|
 | [DeskBot_v01](firmware/DeskBot_v01/) | OLED-лицо и реакция на приближение по ToF | [Telegram](https://t.me/burmatov_builds/28), [Instagram](https://www.instagram.com/reel/DdrJl56gOWI/), [YouTube](https://www.youtube.com/shorts/_fq64NIzsw0) |
 | [DeskBot_v02](firmware/DeskBot_v02/) | Сон и пробуждение по данным BH1750 | [Telegram](https://t.me/burmatov_builds/36), [Instagram](https://www.instagram.com/reel/DdwUL0hAVOD/), [YouTube](https://www.youtube.com/shorts/4MXHmpsthuA) | 
-| [DeskBot_v03](firmware/DeskBot_v03/) | LSM6DS3: движение, поднятие и встряхивание | [Telegram](https://t.me/burmatov_builds/41), [Instagram](https://www.instagram.com/reel/Dd4CDNrBK1f/), [YouTube](https://youtube.com/shorts/9AerNHL3oIc?si=KGGBzXKbvFo9xdsB)  | 
+| [DeskBot_v03](firmware/DeskBot_v03/) | LSM6DS3: движение, поднятие и встряхивание | [Telegram](https://t.me/burmatov_builds/41), [Instagram](https://www.instagram.com/reel/Dd4CDNrBK1f/), [YouTube](https://youtube.com/shorts/9AerNHL3oIc) |
 | [DeskBot_v04](firmware/DeskBot_v04/) | История присутствия: ожидание, скука и возвращение | Материал готовится |
 | [DeskBot_v05](firmware/DeskBot_v05/) | Синхронные реплики и звуковые реакции | Материал готовится |
+| [DeskBot_v06](firmware/DeskBot_v06/) | Жесты, часы, погода и управление звуком | Материал готовится |
 
 ## Как пользоваться
 

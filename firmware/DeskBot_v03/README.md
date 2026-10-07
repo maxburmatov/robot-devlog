@@ -2,7 +2,7 @@
 
 Версия добавляет LSM6DS3 и реакции на движение корпуса.
 
-Связанный контент: [Telegram](https://t.me/burmatov_builds/41), [Instagram](https://www.instagram.com/reel/Dd4CDNrBK1f/), [YouTube](https://youtube.com/shorts/9AerNHL3oIc?si=KGGBzXKbvFo9xdsB)
+Связанный контент: [Telegram](https://t.me/burmatov_builds/41), [Instagram](https://www.instagram.com/reel/Dd4CDNrBK1f/), [YouTube](https://youtube.com/shorts/9AerNHL3oIc)
 
 ## Возможности
 
