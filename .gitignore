@@ -4,4 +4,4 @@ build/
 *.bin
 *.elf
 *.map
-firmware/DeskBot_v06/Secrets.h
+firmware/DeskBot_v*/Secrets.h
