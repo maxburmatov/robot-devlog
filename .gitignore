@@ -1,6 +1,11 @@
 .vscode/
 .idea/
 build/
+.codex-build/
+dataset/
+docs/
+__pycache__/
+*.py[cod]
 *.bin
 *.elf
 *.map
