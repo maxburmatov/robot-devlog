@@ -1,12 +1,48 @@
+# Editors and OS metadata
 .vscode/
 .idea/
+.DS_Store
+Thumbs.db
+
+# Local build and tool output
 build/
 .codex-build/
-dataset/
-docs/
+.pio/
+.pioenvs/
+.piolibdeps/
+.arduinoIDE/
 __pycache__/
 *.py[cod]
 *.bin
 *.elf
 *.map
-firmware/DeskBot_v*/Secrets.h
+*.log
+*.tmp
+
+# Private working material and voice datasets
+dataset/
+docs/
+*.pcm
+*.raw
+*.wav
+
+# Local credentials and device-specific configuration
+.env
+.env.*
+!.env.example
+**/Secrets.h
+**/TuyaSecrets.h
+**/secrets/
+**/credentials/
+*.pem
+*.key
+*.p12
+*.pfx
+*.kdbx
+
+# Keep sanitized templates publishable.
+!**/Secrets.example.h
+!**/TuyaSecrets.example.h
+
+# Local repository instructions
+AGENTS.md

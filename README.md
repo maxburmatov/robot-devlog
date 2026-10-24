@@ -20,6 +20,8 @@
 | [DeskBot_v06](firmware/DeskBot_v06/) | APDS-9960, жесты, часы, погода и runtime mute | [Telegram](https://t.me/burmatov_builds/56), [Instagram](https://www.instagram.com/p/DeJvD2Zh4gx/), [YouTube](https://www.youtube.com/shorts/TML_74t38BA)  |
 | [DeskBot_v07](firmware/DeskBot_v07/) | MAX9814, SOUND/CLAP, FFT-анализ музыки и анимированный режим Dancing | — |
 | [DeskBot_v08](firmware/DeskBot_v08/) | INMP441, единый цифровой аудиотракт и локальные команды «Робот» → действие | — |
+| [DeskBot_v09](firmware/DeskBot_v09/) | Локальная Tuya 3.5 гирлянда, диагностика BH1750 и автоматическое освещение | — |
+| [DeskBot_v10](firmware/DeskBot_v10/) | Двухосевая шея MG90S и сопровождение цели сканирующим VL53L0X | — |
 
 ## Как пользоваться
 
