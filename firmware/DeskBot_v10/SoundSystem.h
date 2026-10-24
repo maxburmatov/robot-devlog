@@ -1,0 +1,76 @@
+#pragma once
+
+#include <Arduino.h>
+#include <driver/i2s.h>
+
+#include "RobotState.h"
+
+struct SoundSystemStats {
+  uint32_t playedRequests = 0;
+  uint64_t busyTimeUs = 0;
+  BaseType_t taskCore = tskNO_AFFINITY;
+  UBaseType_t stackHighWaterMark = 0;
+};
+
+enum class InterfaceCue : uint8_t {
+  Hello,
+  Done,
+  Listening,
+};
+
+class SoundSystem {
+ public:
+  bool begin();
+
+  // Starts the canonical sound for state. Sleep is intentionally silent.
+  bool play(RobotState state);
+
+  // Queues the dedicated electronic Startled cue for a microphone clap.
+  // Unlike state sounds, it never interrupts or replaces active audio.
+  bool playClapReaction();
+  // Queues a non-blocking command/UI cue. By default cues never interrupt an
+  // active state or physical-reaction sound.
+  bool playCue(InterfaceCue cue);
+
+  // Runtime mute keeps the I2S driver and audio task alive. Muting also drops
+  // the pending request and interrupts the clip currently being played.
+  void setEnabled(bool enabled);
+  bool isEnabled() const;
+
+  // True only while the audio task is actively feeding a clip to I2S.
+  bool isPlaying() const;
+  SoundSystemStats stats() const;
+
+ private:
+  enum class RequestType : uint8_t {
+    State,
+    ClapReaction,
+    InterfaceCue,
+  };
+
+  struct Request {
+    RequestType type;
+    RobotState state;
+    uint8_t variant;
+    InterfaceCue cue;
+    uint32_t sequence;
+  };
+
+  static void audioTaskEntry(void* context);
+  void audioTask();
+  void playRequest(const Request& request);
+  uint8_t chooseVariant(RobotState state);
+  static const char* stateName(RobotState state);
+
+  TaskHandle_t taskHandle_ = nullptr;
+  QueueHandle_t requestQueue_ = nullptr;
+  mutable portMUX_TYPE lock_ = portMUX_INITIALIZER_UNLOCKED;
+  bool initialized_ = false;
+  bool enabled_ = false;
+  bool abortRequested_ = false;
+  uint32_t nextSequence_ = 0;
+  uint32_t currentSequence_ = 0;
+  uint32_t pendingSequence_ = 0;
+  uint8_t lastVariant_[ROBOT_STATE_COUNT] = {};
+  SoundSystemStats stats_;
+};
