@@ -43,3 +43,6 @@ docs/
 # Keep sanitized templates publishable.
 !**/Secrets.example.h
 !**/TuyaSecrets.example.h
+
+# Local repository instructions
+AGENTS.md
